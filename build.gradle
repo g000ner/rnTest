@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+
+group 'study.rnTest'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.6.15.Final'
+
+    // https://mvnrepository.com/artifact/org.apache.poi/poi
+    implementation group: 'org.apache.poi', name: 'poi', version: '5.2.3'
+
+    // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'study.rnTest.ui.AppWindow'
+    }
+    from configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
