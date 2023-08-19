@@ -2,7 +2,7 @@ package study.rnTest.service.compute;
 
 import study.rnTest.entity.compute.ComputeResultLog;
 import study.rnTest.entity.compute.ComputeResult;
-import study.rnTest.entity.compute.ComputeType;
+import study.rnTest.entity.point.Dimension;
 import study.rnTest.entity.point.Point;
 import study.rnTest.entity.point.PointsPair;
 import study.rnTest.entity.point.Point2D;
@@ -65,7 +65,8 @@ public class ComputeService {
 
         Class<? extends Point> pointsClass = first.getClass();
 
-        ComputeType computeType;
+        // todo
+        Dimension computeType;
         if (pointsClass.equals(Point2D.class)) {
             Point2D firstSecDim = (Point2D) first;
             Point2D secondSecDim = (Point2D) second;
@@ -74,7 +75,7 @@ public class ComputeService {
                     Math.pow(firstSecDim.getX() - secondSecDim.getX(), 2) +
                             Math.pow(firstSecDim.getY() - secondSecDim.getY(), 2));
 
-            computeType = ComputeType.SECOND_DIM;
+            computeType = Dimension.SECOND_DIM;
         } else {
             Point3D firstThreeDim = (Point3D) first;
             Point3D secondThreeDim = (Point3D) second;
@@ -84,7 +85,7 @@ public class ComputeService {
                             Math.pow(firstThreeDim.getY() - secondThreeDim.getY(), 2) +
                             Math.pow(firstThreeDim.getZ() - secondThreeDim.getZ(), 2));
 
-            computeType = ComputeType.THREE_DIM;
+            computeType = Dimension.THREE_DIM;
         }
         Time computeEndTime = new Time(System.currentTimeMillis());
 

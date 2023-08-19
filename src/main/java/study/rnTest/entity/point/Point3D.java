@@ -1,25 +1,7 @@
 package study.rnTest.entity.point;
 
-public class Point3D extends Point {
-    double x;
-    double y;
+public class Point3D extends Point2D {
     double z;
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
 
     public double getZ() {
         return z;

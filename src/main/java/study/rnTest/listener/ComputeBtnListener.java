@@ -1,7 +1,8 @@
-package study.rnTest.actionListener;
+package study.rnTest.listener;
 
 import study.rnTest.entity.compute.ComputeResult;
 import study.rnTest.entity.point.PointsPair;
+import study.rnTest.exception.IncorrectFileException;
 import study.rnTest.service.compute.ComputeService;
 import study.rnTest.service.xml.XmlPointsParseService;
 import study.rnTest.model.computeResultsTable.ComputeResultsTable;
@@ -27,15 +28,21 @@ public class ComputeBtnListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        pointsFileParseService.setXml(fileChooser.getSelectedFile());
-        List<PointsPair> pointsPairs = pointsFileParseService.parsePoints();
-        List<ComputeResult> resultRows = computeService.computeDistanceBetweenPointsInPairs(pointsPairs);
+        try {
+            pointsFileParseService.setXml(fileChooser.getSelectedFile());
 
-        Object[][] newTableData = new Object[resultRows.size()][];
-        for (int i = 0; i < resultRows.size(); i++) {
-            newTableData[i] = resultRows.get(i).toStringArray();
+
+            List<PointsPair> pointsPairs = pointsFileParseService.parsePoints();
+            List<ComputeResult> resultRows = computeService.computeDistanceBetweenPointsInPairs(pointsPairs);
+
+            Object[][] newTableData = new Object[resultRows.size()][];
+            for (int i = 0; i < resultRows.size(); i++) {
+                newTableData[i] = resultRows.get(i).toStringArray();
+            }
+
+            computeResultsTable.updateTableData(newTableData);
+        } catch (IncorrectFileException ex) {
+            throw new RuntimeException(ex);
         }
-
-        computeResultsTable.updateTableData(newTableData);
     }
 }

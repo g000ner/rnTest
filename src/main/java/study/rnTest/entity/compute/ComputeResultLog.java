@@ -1,6 +1,8 @@
 package study.rnTest.entity.compute;
 
 
+import study.rnTest.entity.point.Dimension;
+
 import javax.persistence.*;
 import java.sql.Time;
 import java.util.UUID;
@@ -30,7 +32,7 @@ public class ComputeResultLog {
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "compute_type")
-    private ComputeType computeType;
+    private Dimension computeType;
 
     @Column(name = "distance")
     private double distance;
@@ -44,7 +46,7 @@ public class ComputeResultLog {
             Time computeEndTime,
             String firstPointDescriptor,
             String secondPointDescriptor,
-            ComputeType computeType,
+            Dimension computeType,
             double distance) {
         this.runId = runId;
         this.computeStartTime = computeStartTime;
@@ -103,11 +105,11 @@ public class ComputeResultLog {
         this.secondPointDescriptor = secondPointDescriptor;
     }
 
-    public ComputeType getComputeType() {
+    public Dimension getComputeType() {
         return computeType;
     }
 
-    public void setComputeType(ComputeType computeType) {
+    public void setComputeType(Dimension computeType) {
         this.computeType = computeType;
     }
 

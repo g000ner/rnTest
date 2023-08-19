@@ -1,36 +1,41 @@
 package study.rnTest.ui;
 
-import study.rnTest.actionListener.ComputeBtnListener;
-import study.rnTest.actionListener.DownloadLogBtnListener;
-import study.rnTest.actionListener.ExportToExcelBtnListener;
-import study.rnTest.actionListener.OpenFileBtnListener;
+import study.rnTest.listener.*;
+import study.rnTest.exception.handler.AppExceptionHandler;
 import study.rnTest.model.computeResultsTable.ComputeResultsTable;
 import study.rnTest.model.logResultsTable.LogResultsTable;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 
 public class AppWindow {
 
-    JFrame jFrame;
+    private JFrame jFrame;
 
-    JFileChooser fileChooser;
+    private JFileChooser fileChooser;
 
-    JTabbedPane tabbedPane;
+    private JTabbedPane tabbedPane;
 
-    JPanel computePanel;
-    JPanel logsPanel;
+    private JPanel computePanel;
+    private JPanel logsPanel;
 
-    JButton openFileBtn;
-    JButton computeBtn;
-    JButton downloadLogBtn;
-    JButton exportToExcelBtn;
+    private JButton openFileBtn;
+    private JButton computeBtn;
+    private JButton downloadLogBtn;
+    private JButton exportToExcelBtn;
 
-    JScrollPane computeResultsTableScrollPane;
-    ComputeResultsTable computeResultsTable;
+    private JScrollPane computeResultsTableScrollPane;
+    private ComputeResultsTable computeResultsTable;
 
-    JScrollPane logResultsTableScrollPane;
-    LogResultsTable logResultsTable;
+    private JScrollPane logResultsTableScrollPane;
+    private LogResultsTable logResultsTable;
+
+    private JOptionPane optionPane;
+
+    private AppExceptionHandler exceptionHandler;
+
+    private JLabel selectedFileLabel;
 
     public AppWindow() {
         prepareGui();
@@ -45,16 +50,18 @@ public class AppWindow {
         prepareLogsPanel();
         prepareTabbedPane();
         prepareFrame();
+        prepareExceptionHandler();
     }
 
     private void prepareComputePanel() {
         computePanel = new JPanel();
         prepareComputeResultsTable();
 
+        prepareSelectedFileLabel();
+        prepareComputeBtn();
         prepareFileChooser();
         prepareOpenFileBtn();
 
-        prepareComputeBtn();
         prepareComputePanelLayout();
     }
 
@@ -68,7 +75,16 @@ public class AppWindow {
     }
 
     private void prepareFileChooser() {
+        FileNameExtensionFilter extensionFilter = new FileNameExtensionFilter("xml", "xml");
         fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(extensionFilter);
+
+        fileChooser.addPropertyChangeListener(
+                new FileChooserPropertyChangeListener(fileChooser, selectedFileLabel, computeBtn));
+        fileChooser.setAcceptAllFileFilterUsed(false);
+
+        ComputeBtnListener computeBtnListener = new ComputeBtnListener(fileChooser, computeResultsTable);
+        computeBtn.addActionListener(computeBtnListener);
     }
 
     private void prepareOpenFileBtn() {
@@ -89,13 +105,19 @@ public class AppWindow {
         layout.setAutoCreateContainerGaps(true);
 
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(openFileBtn)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(openFileBtn)
+                                .addComponent(selectedFileLabel)
+                        )
                 .addComponent(computeBtn)
                 .addComponent(computeResultsTableScrollPane)
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(openFileBtn)
+                        .addGroup(layout.createParallelGroup()
+                                .addComponent(openFileBtn)
+                                .addComponent(selectedFileLabel)
+                        )
                 .addComponent(computeBtn)
                 .addComponent(computeResultsTableScrollPane)
 
@@ -126,9 +148,7 @@ public class AppWindow {
         computeBtn = new JButton();
         computeBtn.setText("Начать расчеты");
         computeBtn.setSize(new Dimension(100, 20));
-
-        ComputeBtnListener computeBtnListener = new ComputeBtnListener(fileChooser, computeResultsTable);
-        computeBtn.addActionListener(computeBtnListener);
+        computeBtn.setEnabled(false);
     }
 
     private void prepareComputeResultsTable() {
@@ -175,5 +195,18 @@ public class AppWindow {
 
         jFrame.add(tabbedPane);
         jFrame.setVisible(true);
+    }
+
+    private void prepareExceptionHandler() {
+        optionPane = new JOptionPane();
+        exceptionHandler = new AppExceptionHandler();
+        exceptionHandler.setMessagePane(optionPane);
+        exceptionHandler.setFrame(jFrame);
+
+        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
+    }
+
+    private void prepareSelectedFileLabel() {
+        selectedFileLabel = new JLabel();
     }
 }

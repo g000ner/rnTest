@@ -1,4 +1,4 @@
-package study.rnTest.actionListener;
+package study.rnTest.listener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -18,7 +18,5 @@ public class OpenFileBtnListener implements ActionListener {
         fileChooser.setDialogTitle("Выбор файла");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.showOpenDialog(jFrame);
-
-        System.out.println(e.getActionCommand());
     }
 }

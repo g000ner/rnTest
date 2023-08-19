@@ -1,4 +1,4 @@
-package study.rnTest.actionListener;
+package study.rnTest.listener;
 
 import study.rnTest.entity.compute.ComputeResultLog;
 import study.rnTest.service.compute.ComputeResultsLogService;

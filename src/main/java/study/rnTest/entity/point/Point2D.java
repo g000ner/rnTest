@@ -1,8 +1,8 @@
 package study.rnTest.entity.point;
 
 public class Point2D extends Point {
-    private double x;
-    private double y;
+    protected double x;
+    protected double y;
 
     public double getX() {
         return x;
