@@ -7,6 +7,7 @@ import study.rnTest.entity.point.Point;
 import study.rnTest.entity.point.PointsPair;
 import study.rnTest.entity.point.Point2D;
 import study.rnTest.entity.point.Point3D;
+import study.rnTest.exception.handler.IncorrectPointPairException;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.UUID;
 public class ComputeService {
     private ComputeResultsLogService computeResultsLogService;
     private UUID currentRunId;
+    private PointsDistanceComputer distanceComputer;
+    private Dimension currComputeType;
 
     private static ComputeService instance = null;
 
@@ -31,23 +34,37 @@ public class ComputeService {
         return instance;
     }
 
-    public List<ComputeResult> computeDistanceBetweenPointsInPairs(List<PointsPair> pointsPairs) {
+    public List<ComputeResult> computeDistanceBetweenPointsInPairs(List<PointsPair> pointsPairs) throws IncorrectPointPairException {
         List<ComputeResult> result = new ArrayList<>();
         if (pointsPairs.isEmpty()) {
             return result;
         }
 
-        currentRunId = UUID.randomUUID();
+        setDistanceComputerByFirstPointsPair(pointsPairs.get(0));
 
+        currentRunId = UUID.randomUUID();
         computeResultsLogService.openSession();
         for (PointsPair pair : pointsPairs) {
-            double distance = computeDistanceBetweenPointsInPair(pair);
+            Time computeStartTime = new Time(System.currentTimeMillis());
+            double distance = distanceComputer.computeDistanceBetweenPointsInPair(pair);
+            Time computeEndTime = new Time(System.currentTimeMillis());
 
             ComputeResult computeResultRow = new ComputeResult(
                     pair.getFirstPoint(),
                     pair.getSecondPoint(),
                     distance
             );
+
+            ComputeResultLog resultLog = new ComputeResultLog(
+                    currentRunId,
+                    computeStartTime,
+                    computeEndTime,
+                    pair.getFirstPoint().toString(),
+                    pair.getSecondPoint().toString(),
+                    currComputeType,
+                    distance
+            );
+            computeResultsLogService.saveComputeResultLog(resultLog);
 
             result.add(computeResultRow);
         }
@@ -56,51 +73,22 @@ public class ComputeService {
         return result;
     }
 
-    private double computeDistanceBetweenPointsInPair(PointsPair pair) {
-        Time computeStartTime = new Time(System.currentTimeMillis());
-
+    private void setDistanceComputerByFirstPointsPair(PointsPair pair) throws IncorrectPointPairException {
         Point first = pair.getFirstPoint();
-        Point second = pair.getSecondPoint();
-        double distance = 0;
+
+        if (first == null) {
+            throw new IncorrectPointPairException("В паре нет первой точки");
+        }
 
         Class<? extends Point> pointsClass = first.getClass();
-
-        // todo
-        Dimension computeType;
         if (pointsClass.equals(Point2D.class)) {
-            Point2D firstSecDim = (Point2D) first;
-            Point2D secondSecDim = (Point2D) second;
-
-            distance = Math.sqrt(
-                    Math.pow(firstSecDim.getX() - secondSecDim.getX(), 2) +
-                            Math.pow(firstSecDim.getY() - secondSecDim.getY(), 2));
-
-            computeType = Dimension.SECOND_DIM;
+            distanceComputer = new Points2DDistanceComputer();
+            currComputeType = Dimension.SECOND_DIM;
+        } else if (pointsClass.equals(Point3D.class)){
+            distanceComputer = new Points3DDistanceComputer();
+            currComputeType = Dimension.THREE_DIM;
         } else {
-            Point3D firstThreeDim = (Point3D) first;
-            Point3D secondThreeDim = (Point3D) second;
-
-            distance = Math.sqrt(
-                    Math.pow(firstThreeDim.getX() - secondThreeDim.getX(), 2) +
-                            Math.pow(firstThreeDim.getY() - secondThreeDim.getY(), 2) +
-                            Math.pow(firstThreeDim.getZ() - secondThreeDim.getZ(), 2));
-
-            computeType = Dimension.THREE_DIM;
+            throw new IncorrectPointPairException("В паре точки неизвестной размерности");
         }
-        Time computeEndTime = new Time(System.currentTimeMillis());
-
-
-        ComputeResultLog resultLog = new ComputeResultLog(
-                currentRunId,
-                computeStartTime,
-                computeEndTime,
-                pair.getFirstPoint().toString(),
-                pair.getSecondPoint().toString(),
-                computeType,
-                distance
-        );
-        computeResultsLogService.saveComputeResultLog(resultLog);
-
-        return distance;
     }
 }

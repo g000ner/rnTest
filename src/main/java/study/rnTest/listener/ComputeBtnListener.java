@@ -3,8 +3,9 @@ package study.rnTest.listener;
 import study.rnTest.entity.compute.ComputeResult;
 import study.rnTest.entity.point.PointsPair;
 import study.rnTest.exception.IncorrectFileException;
+import study.rnTest.exception.handler.IncorrectPointPairException;
 import study.rnTest.service.compute.ComputeService;
-import study.rnTest.service.xml.XmlPointsParseService;
+import study.rnTest.service.xml.XmlPointsPairsParseService;
 import study.rnTest.model.computeResultsTable.ComputeResultsTable;
 
 import javax.swing.*;
@@ -16,12 +17,12 @@ public class ComputeBtnListener implements ActionListener {
     private JFileChooser fileChooser;
     private ComputeResultsTable computeResultsTable;
 
-    private XmlPointsParseService pointsFileParseService;
+    private XmlPointsPairsParseService pointsFileParseService;
     private ComputeService computeService;
 
     public ComputeBtnListener(JFileChooser fileChooser, ComputeResultsTable computeResultsTable) {
         this.fileChooser = fileChooser;
-        this.pointsFileParseService = XmlPointsParseService.getInstance();
+        this.pointsFileParseService = XmlPointsPairsParseService.getInstance();
         this.computeService = ComputeService.getInstance();
         this.computeResultsTable = computeResultsTable;
     }
@@ -41,7 +42,7 @@ public class ComputeBtnListener implements ActionListener {
             }
 
             computeResultsTable.updateTableData(newTableData);
-        } catch (IncorrectFileException ex) {
+        } catch (IncorrectFileException | IncorrectPointPairException ex) {
             throw new RuntimeException(ex);
         }
     }

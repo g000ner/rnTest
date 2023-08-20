@@ -47,12 +47,18 @@ public class ExcelService {
         };
         createAndFillHeaderCells(sheet, columnNames);
 
+        HSSFCellStyle cellsStyle = (HSSFCellStyle) currWorkbook.createCellStyle();
+
+        cellsStyle.setBorderBottom(BorderStyle.DOUBLE);
+        cellsStyle.setBorderLeft(BorderStyle.DOUBLE);
+        cellsStyle.setBorderRight(BorderStyle.DOUBLE);
+
         Row row;
         for (int i = 0; i < resultLogs.size(); i++) {
             ComputeResultLog logRow = resultLogs.get(i);
             row = sheet.createRow(i + 1);
 
-            createAndFillCellsFromTheLogRow(row, logRow);
+            createAndFillCellsFromTheLogRow(row, logRow, cellsStyle);
         }
 
         String fileName = String.format("%s-compute-log.xls", LocalDateTime.now().getNano());
@@ -69,12 +75,7 @@ public class ExcelService {
         this.exportFilesDirectory = exportFilesDirectory;
     }
 
-    private void createAndFillCellsFromTheLogRow(Row row, ComputeResultLog logRow) {
-        HSSFCellStyle cellsStyle = (HSSFCellStyle) currWorkbook.createCellStyle();
-
-        cellsStyle.setBorderBottom(BorderStyle.DOUBLE);
-        cellsStyle.setBorderLeft(BorderStyle.DOUBLE);
-        cellsStyle.setBorderRight(BorderStyle.DOUBLE);
+    private void createAndFillCellsFromTheLogRow(Row row, ComputeResultLog logRow, HSSFCellStyle cellsStyle) {
 
         Cell idCell = row.createCell(0);
         idCell.setCellValue(logRow.getComputeId().toString());

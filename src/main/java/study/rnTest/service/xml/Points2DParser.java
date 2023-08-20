@@ -6,8 +6,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
-public class Points2DParser extends PointsParser {
-    protected Point parsePoint(Node pointNode) {
+public class Points2DParser implements PointsParser {
+    public Point parsePoint(Node pointNode) {
         Point2D point = new Point2D();
         int coordinatesCount = 0;
 

@@ -19,5 +19,4 @@ public class PointsPair {
     public void setSecondPoint(Point secondPoint) {
         this.secondPoint = secondPoint;
     }
-
 }

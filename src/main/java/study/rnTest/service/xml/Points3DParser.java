@@ -5,9 +5,9 @@ import study.rnTest.entity.point.Point3D;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class Points3DParser extends PointsParser {
+public class Points3DParser implements PointsParser {
     @Override
-    protected Point parsePoint(Node pointNode) {
+    public Point parsePoint(Node pointNode) {
         Point3D point = new Point3D();
         int coordinatesCount = 0;
 

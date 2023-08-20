@@ -4,28 +4,26 @@ import study.rnTest.entity.point.PointsPair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import study.rnTest.exception.IncorrectFileException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
-public class XmlPointsParseService {
+public class XmlPointsPairsParseService {
     private File xml;
-    PointsParser pointsParser;
+    PointsPairsParser pointsPairsParser;
 
-    private static XmlPointsParseService instance = null;
+    private static XmlPointsPairsParseService instance = null;
 
-    private XmlPointsParseService() {
+    private XmlPointsPairsParseService() {
+        pointsPairsParser = new PointsPairsParser();
     }
 
-    public static XmlPointsParseService getInstance() {
+    public static XmlPointsPairsParseService getInstance() {
         if (instance == null) {
-            instance = new XmlPointsParseService();
+            instance = new XmlPointsPairsParseService();
         }
 
         return instance;
@@ -49,26 +47,15 @@ public class XmlPointsParseService {
             if (dimensionNode == null) {
                 throw new IncorrectFileException("В pointsPairs не указан dimension");
             }
-            String dimensionType = dimensionNode.getNodeValue();
+            String dimension = dimensionNode.getNodeValue();
+            setPointsParserInRelationToDimension(dimension);
 
-            createNeededDimensionParserAndSetToField(dimensionType);
-            result = pointsParser.parsePointsPairs(points);
+            result = pointsPairsParser.parsePointsPairs(points);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return result;
-    }
-
-    private void createNeededDimensionParserAndSetToField(String dimensionType) throws IncorrectFileException {
-        if (dimensionType.equals("2")) {
-            // todo
-            this.pointsParser = new Points2DParser();
-        } else if (dimensionType.equals("3")){
-            this.pointsParser = new Points3DParser();
-        } else {
-            throw new IncorrectFileException("Неверная размерность");
-        }
     }
 
     public File getXml() {
@@ -82,11 +69,13 @@ public class XmlPointsParseService {
         this.xml = xml;
     }
 
-    public PointsParser getPointsParser() {
-        return pointsParser;
-    }
-
-    public void setPointsParser(PointsParser pointsParser) {
-        this.pointsParser = pointsParser;
+    private void setPointsParserInRelationToDimension(String dimension) throws IncorrectFileException {
+        if (dimension.equals("2")) {
+            this.pointsPairsParser.setPointsParser(new Points2DParser());
+        } else if (dimension.equals("3")){
+            this.pointsPairsParser.setPointsParser(new Points3DParser());
+        } else {
+            throw new IncorrectFileException("Неизвестная размерность");
+        }
     }
 }
